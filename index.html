@@ -10,6 +10,108 @@
   <body>
     <textarea id="source">
 
+
+class: middle, left
+
+# KEYNOTE
+.subtitle[This is probably a talk about Rust? or maybe Philosophy?]
+
+<br/>
+.sad-ferris[![rustwasmjs](public/img/sadferris.png)]
+
+#### Ashley Williams, [@ag_dubs](https://twitter.com/ag_dubs)
+---
+class: middle, center
+
+# What should this talk be about?
+
+---
+class: middle, center
+
+![website](public/img/rust-www.png)
+
+---
+class: middle, center
+
+![enhance](public/img/enhance.gif)
+
+---
+class: middle, center
+
+![slogan](public/img/slogan.png)
+
+---
+class: middle, center
+
+![empowering](public/img/empowering.png)
+
+---
+class: middle, center
+
+![russian empowering](public/img/russian.png)
+
+---
+class: center, middle
+background-image: url(public/img/gears/gears1-edited.jpg)
+
+![captainplanet](public/img/captainplanet.gif)
+
+---
+class: center, middle
+background-image: url(public/img/gears/gears1-edited.jpg)
+
+![captainplanet](public/img/captainplanet2.gif)
+
+--
+
+.rustlang[Rust]
+
+--
+
+.cpplang[C++]
+
+--
+
+.jslang[JavaScript]
+
+--
+
+.academia[Academia]
+
+--
+
+.new[New Developers]
+
+---
+class: middle, center
+
+![meme](public/img/captainplanet.png)
+
+---
+class: middle, center
+
+![issue](public/img/issue.png)
+
+---
+class: middle, center
+
+![comments](public/img/comments.png)
+
+---
+class: middle, center
+
+![OS Dev Wiki](public/img/OSDevWiki.png)
+
+--
+
+.no[![no](public/img/no2.gif)]
+
+---
+class: middle, center
+
+![show not tell](public/img/showdonttell.jpg)
+
+---
 class: middle, left
 
 # Hello `wasm-bindgen`!
@@ -19,6 +121,17 @@ class: middle, left
 ![rustwasmjs](public/img/rustwasmjs.png)
 
 #### Ashley Williams, [@ag_dubs](https://twitter.com/ag_dubs)
+
+---
+class: middle, center
+
+![wasm](public/img/wasm1.png)
+
+---
+class: middle, center
+
+![wasm](public/img/wasm2.png)
+
 ---
 class: middle, center
 
@@ -43,6 +156,24 @@ class: middle, center
 class: middle, center
 
 ![wasm spa](public/img/relaxingspa.png)
+
+---
+class: middle, center
+
+# `bindgen`
+.subtitle[Short for "bindings generator".]
+
+--
+
+## "Generates code that helps separate types of code work together."
+
+---
+class: middle, center
+
+# `bindgen`
+.subtitle[Short for "bindings generator".]
+
+## "Building bridges is hard, let's have computers do it!"
 
 ---
 class: middle, center
@@ -591,6 +722,50 @@ The web-sys crate is entirely mechanically generated inside build.rs using wasm-
 
   https://heycam.github.io/webidl/
 ]
+
+---
+class: middle, center
+
+# Can WASM access the DOM???
+
+--
+
+# No, but also yes.
+
+---
+class: middle, left
+
+```rust
+use wasm_bindgen::prelude::*;
+
+// Called by our JS entry point to run the example
+#[wasm_bindgen(start)]
+pub fn run() -> Result<(), JsValue> {
+    // Use `web_sys`'s global `window` function to get a handle on the global
+    // window object.
+    let window = web_sys::window().expect("no global `window` exists");
+    let document = window.document().expect("should have a document on window");
+    let body = document.body().expect("document should have a body");
+
+    // Manufacture the element we're gonna append
+    let val = document.create_element("p")?;
+    val.set_inner_html("Hello from Rust!");
+
+    body.append_child(&val)?;
+
+    Ok(())
+}
+```
+
+.citation[https://github.com/rustwasm/wasm-bindgen/tree/master/examples/dom]
+
+---
+class: middle, left
+
+- ## Web Audio
+- ## `performance.now()`
+- ## 
+
 ---
 class: middle, center
 
@@ -619,92 +794,33 @@ class: middle, center
 ![tight fit](public/img/tightfit.gif)
 
 ---
-class: middle, left
+class: middle, center
 
-# .center[JS Objects in Rust]
-
-```rust
-pub struct JsValue {
-    idx: u32,
-}
-
-// "private" constructors
-
-impl Drop for JsValue {
-    fn drop(&mut self) {
-        unsafe {
-            __wbindgen_object_drop_ref(self.idx);
-        }
-    }
-}
-```
+# The `#[wasm_bindgen]` macro generates executable functions which "describe the type signature of an import or export".
 
 ---
 class: middle, left
 
-## Temporary JS Objects: Stack
-
+In *your* Rust->WASM code:
 ```rust
-// foo.rs
 #[wasm_bindgen]
-pub fn foo(a: &JsValue) {
+fn greet(a: &str) {
     // ...
 }
 ```
 
-Here we're using the special `JsValue` type from the `wasm-bindgen` library itself. Our exported function, foo, takes a reference to an object. This notably means that it can't persist the object past the lifetime of this function call.
-
-Now what we actually want to generate is a JS module that looks like (in Typescript parlance):
-
-```ts
-// foo.d.ts
-export function foo(a: any);
-```
----
-class: middle, left
-
-## Temporary JS Objects: Stack
-
-```js
-// foo.js
-import * as wasm from './foo_bg';
-
-const stack = [];
-
-function addBorrowedObject(obj) {
-  stack.push(obj);
-  return stack.length - 1;
-}
-
-export function foo(arg0) {
-  const idx0 = addBorrowedObject(arg0);
-  try {
-    wasm.foo(idx0);
-  } finally {
-    stack.pop();
-  }
-}
-```
-
----
-class: middle, left
-
-## Temporary JS Objects: Stack
-
+Generated by `wasm-bindgen`:
 ```rust
-// what the user wrote
-pub fn foo(a: &JsValue) {
-    // ...
+#[no_mangle]
+pub extern "C" fn __wbindgen_describe_greet() {
+    <Fn(&str)>::describe();
 }
+```
 
-// what got gen'd
-#[export_name = "foo"]
-pub extern fn __wasm_bindgen_generated_foo(arg0: u32) {
-    let arg0 = unsafe {
-        ManuallyDrop::new(JsValue::__from_idx(arg0))
-    };
-    let arg0 = &*arg0;
-    foo(arg0);
+Because of this trait:
+```rust
+pub trait WasmDescribe {
+    fn describe();
 }
 ```
 
@@ -739,9 +855,15 @@ class: middle, center
 ---
 class: middle, center
 
+## Go forth and seek to build technology that
+# EMPOWERS
+
+---
+class: middle, center
+
 # Thanks!
 
-@ag_dubs | [bit.ly/hello-wasm-bindgen](http://bit.ly/hello-wasm-bindgen)
+@ag_dubs | [bit.ly/rustrush-2018](http://bit.ly/rustrush-2018)
     </textarea>
     <script src="public/remark.js" type="text/javascript"></script>
     <script type="text/javascript">

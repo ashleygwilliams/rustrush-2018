@@ -90,3 +90,70 @@ ul {
 .center {
   text-align: center;
 }
+
+.sad-ferris img {
+  width: 60%;
+}
+
+.rustlang {
+  font-size: 3rem;
+  color: white;
+  font-weight: 800;
+  position: fixed;
+  bottom: 200px;
+  left: 200px;
+  text-shadow: 4px 4px 2px black;
+}
+
+.cpplang {
+  font-size: 3rem;
+  color: white;
+  font-weight: 800;
+  position: fixed;
+  bottom: 100px;
+  left: 450px;
+  text-shadow: 4px 4px 2px black;
+}
+
+.jslang {
+  font-size: 3rem;
+  color: white;
+  font-weight: 800;
+  position: fixed;
+  bottom: 250px;
+  left: 575px;
+  text-shadow: 4px 4px 2px black;
+}
+
+.academia {
+  font-size: 3rem;
+  color: white;
+  font-weight: 800;
+  position: fixed;
+  bottom: 500px;
+  left: 500px;
+  text-shadow: 4px 4px 2px black;
+}
+
+.new {
+  font-size: 3rem;
+  color: white;
+  font-weight: 800;
+  position: fixed;
+  bottom: 450px;
+  left: 100px;
+  text-shadow: 4px 4px 2px black;
+}
+
+.no {
+  position: absolute;
+  top: -112px;
+  left: 0;
+}
+
+.citation {
+  font-size: 0.6em;
+  position: absolute;
+  left: 50px;
+  bottom: 20px;
+}
